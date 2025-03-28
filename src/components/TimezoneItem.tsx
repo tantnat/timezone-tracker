@@ -1,6 +1,5 @@
 import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
-import AddTimeWindow from "./AddTimeWindow";
 
 interface TimeWindow {
     start: string;
@@ -9,12 +8,12 @@ interface TimeWindow {
 
 interface Props {
     name: string;
+    timeWindows: TimeWindow[];
     onRemove: () => void;
 }
 
-export default function TimezoneItem({ name, onRemove }: Props) {
+export default function TimezoneItem({ name, timeWindows, onRemove }: Props) {
     const [time, setTime] = useState(DateTime.now().setZone(name).toFormat("HH:mm:ss"));
-    const [timeWindows, setTimeWindows] = useState<TimeWindow[]>([]);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -22,10 +21,6 @@ export default function TimezoneItem({ name, onRemove }: Props) {
         }, 1000);
         return () => clearInterval(interval);
     }, [name]);
-
-    const addTimeWindow = (start: string, end: string) => {
-        setTimeWindows([...timeWindows, { start, end }]);
-    };
 
     return (
         <li className="flex flex-col p-2 border-b">
@@ -38,8 +33,6 @@ export default function TimezoneItem({ name, onRemove }: Props) {
                     Удалить
                 </button>
             </div>
-
-            <AddTimeWindow onAdd={addTimeWindow} />
 
             <ul className="mt-2">
                 {timeWindows.map((win, index) => (
