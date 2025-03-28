@@ -3,6 +3,7 @@ import AddTimezone from "./components/AddTimezone";
 import TimezoneItem from "./components/TimezoneItem";
 import AddTimeWindow from "./components/AddTimeWindow";
 import TimeWindowList from "./components/TimeWindowList";
+import TimeScale from "./components/TimeScale";
 
 import { DateTime } from "luxon";
 
@@ -87,6 +88,15 @@ export default function App() {
                     <TimezoneItem key={tz} name={tz} timeWindows={timeWindows} onRemove={() => removeTimezone(tz)} />
                 ))}
             </ul>
+            
+            <ul className="mt-4 border rounded">
+  {timezones.map((tz) => (
+    <div key={tz}>
+      <TimezoneItem name={tz} timeWindows={timeWindows} onRemove={() => removeTimezone(tz)} />
+      <TimeScale timezone={tz} windows={timeWindows.filter((w) => w.timezone === tz)} />
+    </div>
+  ))}
+</ul>
     
             <div className="mt-4">
                 <h2 className="text-xl font-semibold">Временные окна</h2>
