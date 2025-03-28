@@ -83,20 +83,21 @@ export default function App() {
             <h1 className="text-2xl font-bold mb-4">Таймзоны и временные окна</h1>
             <AddTimezone onAdd={addTimezone} />
             <AddTimeWindow onAdd={addTimeWindow} timezones={timezones} />
+
             <ul className="mt-4 border rounded">
                 {timezones.map((tz) => (
-                    <TimezoneItem key={tz} name={tz} timeWindows={timeWindows} onRemove={() => removeTimezone(tz)} />
+                    <div key={tz}>
+                        <TimezoneItem name={tz} timeWindows={timeWindows} onRemove={() => removeTimezone(tz)} />
+                        <TimeScale 
+                            timezone={tz} 
+                            windows={timeWindows.map(win => ({
+                                ...win,
+                                timezone: win.timezone
+                            }))} 
+                        />
+                    </div>
                 ))}
             </ul>
-            
-            <ul className="mt-4 border rounded">
-  {timezones.map((tz) => (
-    <div key={tz}>
-      <TimezoneItem name={tz} timeWindows={timeWindows} onRemove={() => removeTimezone(tz)} />
-      <TimeScale timezone={tz} windows={timeWindows.filter((w) => w.timezone === tz)} />
-    </div>
-  ))}
-</ul>
     
             <div className="mt-4">
                 <h2 className="text-xl font-semibold">Временные окна</h2>

@@ -1,4 +1,4 @@
-import { Trash } from "lucide-react";
+import TimeWindow from "./TimeWindow";
 
 interface TimeWindow {
     id: string;
@@ -14,14 +14,15 @@ interface TimeWindowListProps {
 
 function TimeWindowList({ timeWindows, removeWindow }: TimeWindowListProps) {
     return (
-        <div>
+        <div className="space-y-4">
             {timeWindows.map((window) => (
-                <div key={window.id} className="flex items-center gap-2 border p-2 rounded">
-                    <span>{window.start} - {window.end} ({window.timezone})</span>
-                    <button onClick={() => removeWindow(window.id)} className="text-red-500 hover:text-red-700">
-                        <Trash size={16} />
-                    </button>
-                </div>
+                <TimeWindow
+                    key={window.id}
+                    start={window.start}
+                    end={window.end}
+                    timezone={window.timezone}
+                    onRemove={() => removeWindow(window.id)}
+                />
             ))}
         </div>
     );
