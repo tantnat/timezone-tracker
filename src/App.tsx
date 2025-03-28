@@ -2,13 +2,15 @@ import { useState, useEffect } from "react";
 import AddTimezone from "./components/AddTimezone";
 import TimezoneItem from "./components/TimezoneItem";
 import AddTimeWindow from "./components/AddTimeWindow";
+import TimeWindowList from "./components/TimeWindowList";
 
 import { DateTime } from "luxon";
 
 interface TimeWindow {
-    start: string;  // Время начала в исходной таймзоне
-    end: string;    // Время окончания в исходной таймзоне
-    timezone: string;  // Исходная таймзона
+    id: string;
+    start: string;
+    end: string;
+    timezone: string;
 }
 
 export default function App() {
@@ -17,19 +19,34 @@ export default function App() {
 
     useEffect(() => {
         const savedTimezones = localStorage.getItem("timezones");
-        if (savedTimezones) setTimezones(JSON.parse(savedTimezones));
-
+        if (savedTimezones) {
+            try {
+                setTimezones(JSON.parse(savedTimezones));
+            } catch (e) {
+                console.error("Ошибка загрузки таймзон:", e);
+            }
+        }
+    
         const savedWindows = localStorage.getItem("timeWindows");
-        if (savedWindows) setTimeWindows(JSON.parse(savedWindows));
+        if (savedWindows) {
+            try {
+                setTimeWindows(JSON.parse(savedWindows));
+            } catch (e) {
+                console.error("Ошибка загрузки окон:", e);
+            }
+        }
     }, []);
 
     useEffect(() => {
-        console.log("Обновленный список окон:", timeWindows);  // ✅ Проверяем обновление состояния
-        localStorage.setItem("timeWindows", JSON.stringify(timeWindows));
-    }, [timeWindows]);
-
+        if (timezones.length > 0) {
+            localStorage.setItem("timezones", JSON.stringify(timezones));
+        }
+    }, [timezones]);
+    
     useEffect(() => {
-        localStorage.setItem("timeWindows", JSON.stringify(timeWindows));
+        if (timeWindows.length > 0) {
+            localStorage.setItem("timeWindows", JSON.stringify(timeWindows));
+        }
     }, [timeWindows]);
 
     const addTimezone = (tz: string) => {
@@ -43,9 +60,21 @@ export default function App() {
     };
 
     const addTimeWindow = (start: string, end: string, timezone: string) => {
-        console.log("Получено новое окно:", { start, end, timezone }); // ✅ Проверяем, что данные дошли
-        const newWindow: TimeWindow = { start, end, timezone };
+        const newWindow: TimeWindow = {
+            id: crypto.randomUUID(),
+            start,
+            end,
+            timezone
+        };
         setTimeWindows([...timeWindows, newWindow]);
+    };
+
+    const removeTimeWindow = (id: string) => {
+        setTimeWindows((prevWindows) => {
+            const updatedWindows = prevWindows.filter(window => window.id !== id);
+            localStorage.setItem("timeWindows", JSON.stringify(updatedWindows));
+            return updatedWindows;
+        });
     };
 
     return (
@@ -58,6 +87,11 @@ export default function App() {
                     <TimezoneItem key={tz} name={tz} timeWindows={timeWindows} onRemove={() => removeTimezone(tz)} />
                 ))}
             </ul>
+    
+            <div className="mt-4">
+                <h2 className="text-xl font-semibold">Временные окна</h2>
+                <TimeWindowList timeWindows={timeWindows} removeWindow={removeTimeWindow} />
+            </div>
         </div>
     );
 }
