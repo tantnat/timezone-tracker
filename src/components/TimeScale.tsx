@@ -23,24 +23,21 @@ export default function TimeScale({ timezone, windows }: TimeScaleProps) {
 
   // Helper function to calculate window position
   const calculateWindowPosition = (start: DateTime, end: DateTime) => {
-    const windowStartHour = start.hour;
-    const windowEndHour = end.hour;
-    
-    // Handle windows that span across midnight
-    let left = ((windowStartHour - startHour) / 6) * 100;
-    let width = ((windowEndHour - windowStartHour) / 6) * 100;
+    let windowStartHour = start.hour;
+    let windowEndHour = end.hour;
 
-    // If window ends before it starts, it spans across midnight
     if (windowEndHour < windowStartHour) {
-      width = ((24 - windowStartHour + windowEndHour) / 6) * 100;
+        windowEndHour += 24; // Корректируем, если окно пересекает полночь
     }
 
-    // Ensure the window stays within the visible range
-    left = Math.max(0, Math.min(100, left));
-    width = Math.max(0, Math.min(100, width));
+    let left = ((windowStartHour - startHour) / (endHour - startHour)) * 100;
+    let width = ((windowEndHour - windowStartHour) / (endHour - startHour)) * 100;
+
+    left = Math.max(0, left);
+    width = Math.min(100 - left, width); // Ограничиваем ширину, чтобы окно не выходило за границы
 
     return { left, width };
-  };
+};
 
   return (
     <div className="relative w-full border rounded-lg p-4 bg-white shadow-sm my-4">
@@ -67,10 +64,8 @@ export default function TimeScale({ timezone, windows }: TimeScaleProps) {
       <div className="relative h-8 mt-2">
         {windows.map((win, idx) => {
           // Convert the window times from its original timezone to the current timezone
-          const start = DateTime.fromISO(win.start, { zone: win.timezone })
-            .setZone(timezone);
-          const end = DateTime.fromISO(win.end, { zone: win.timezone })
-            .setZone(timezone);
+          const start = DateTime.fromISO(win.start, { zone: win.timezone }).setZone(timezone);
+          const end = DateTime.fromISO(win.end, { zone: win.timezone }).setZone(timezone);
           
           const { left, width } = calculateWindowPosition(start, end);
 
