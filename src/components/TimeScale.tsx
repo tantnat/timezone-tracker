@@ -23,21 +23,27 @@ export default function TimeScale({ timezone, windows }: TimeScaleProps) {
 
   // Helper function to calculate window position
   const calculateWindowPosition = (start: DateTime, end: DateTime) => {
-    let windowStartHour = start.hour;
-    let windowEndHour = end.hour;
+    const windowStartHour = start.hour;
+    const windowEndHour = end.hour;
+    
+    // Handle windows that span across midnight
+    let left = ((windowStartHour - startHour) / 6) * 100;
+    let width = ((windowEndHour - windowStartHour) / 6) * 100;
 
+    // If window ends before it starts, it spans across midnight
     if (windowEndHour < windowStartHour) {
-        windowEndHour += 24; // Корректируем, если окно пересекает полночь
+      width = ((24 - windowStartHour + windowEndHour) / 6) * 100;
     }
 
-    let left = ((windowStartHour - startHour) / (endHour - startHour)) * 100;
-    let width = ((windowEndHour - windowStartHour) / (endHour - startHour)) * 100;
-
-    left = Math.max(0, left);
-    width = Math.min(100 - left, width); // Ограничиваем ширину, чтобы окно не выходило за границы
+    // Ensure the window stays within the visible range
+    left = Math.max(0, Math.min(100, left));
+    width = Math.max(0, Math.min(100, width));
 
     return { left, width };
-};
+  };
+
+  // Calculate current time position
+  const currentTimePosition = ((currentTime.hour - startHour + currentTime.minute / 60) / 6) * 100;
 
   return (
     <div className="relative w-full border rounded-lg p-4 bg-white shadow-sm my-4">
@@ -64,8 +70,10 @@ export default function TimeScale({ timezone, windows }: TimeScaleProps) {
       <div className="relative h-8 mt-2">
         {windows.map((win, idx) => {
           // Convert the window times from its original timezone to the current timezone
-          const start = DateTime.fromISO(win.start, { zone: win.timezone }).setZone(timezone);
-          const end = DateTime.fromISO(win.end, { zone: win.timezone }).setZone(timezone);
+          const start = DateTime.fromISO(win.start, { zone: win.timezone })
+            .setZone(timezone);
+          const end = DateTime.fromISO(win.end, { zone: win.timezone })
+            .setZone(timezone);
           
           const { left, width } = calculateWindowPosition(start, end);
 
@@ -96,7 +104,7 @@ export default function TimeScale({ timezone, windows }: TimeScaleProps) {
       <div
         className="absolute bg-red-500 w-1 h-12"
         style={{ 
-          left: `${((currentTime.hour - startHour) / 6) * 100}%`,
+          left: `${currentTimePosition}%`,
           top: '50%',
           transform: 'translateY(-50%)'
         }}
