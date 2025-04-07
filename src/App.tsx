@@ -24,7 +24,7 @@ export default function App() {
             try {
                 setTimezones(JSON.parse(savedTimezones));
             } catch (e) {
-                console.error("Ошибка загрузки таймзон:", e);
+                console.error("Error loading timezones:", e);
             }
         }
     
@@ -33,7 +33,7 @@ export default function App() {
             try {
                 setTimeWindows(JSON.parse(savedWindows));
             } catch (e) {
-                console.error("Ошибка загрузки окон:", e);
+                console.error("Error loading time windows:", e);
             }
         }
     }, []);
