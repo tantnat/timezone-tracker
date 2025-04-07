@@ -79,22 +79,61 @@ export default function TimeScale({ timezone, windows }: TimeScaleProps) {
               .setZone(timezone);
             
             const { left, width } = calculateWindowPosition(start, end);
+            const timeLabel = `${start.toFormat('HH:mm')} - ${end.toFormat('HH:mm')}`;
+            const isNarrow = width < 15; // If window is too narrow, show label above
 
             if (width > 0) {
               return (
                 <div
                   key={idx}
-                  className="absolute h-full bg-blue-50 border border-blue-300 hover:bg-blue-100 transition-colors"
-                  style={{ 
-                    left: `${left}%`, 
-                    width: `${width}%`,
-                    borderRadius: '4px',
-                  }}
+                  className="group"
                 >
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-sm font-medium text-blue-800 px-2 truncate">
-                      {start.toFormat('HH:mm')} - {end.toFormat('HH:mm')}
-                    </span>
+                  {/* Time label - shows above for narrow windows */}
+                  {isNarrow && (
+                    <div 
+                      className="absolute -top-7 whitespace-nowrap"
+                      style={{ 
+                        left: `${left + (width/2)}%`,
+                        transform: 'translateX(-50%)'
+                      }}
+                    >
+                      <span className="text-sm font-medium text-blue-800 bg-white px-1 rounded border border-blue-200">
+                        {timeLabel}
+                      </span>
+                    </div>
+                  )}
+                  
+                  {/* Time window bar */}
+                  <div
+                    className="absolute h-full bg-blue-50/80 hover:bg-blue-100/90 transition-colors border border-blue-300"
+                    style={{ 
+                      left: `${left}%`, 
+                      width: `${width}%`,
+                      borderRadius: '4px',
+                    }}
+                  >
+                    {/* Time label - inside window for wider windows */}
+                    {!isNarrow && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-sm font-medium text-blue-800 px-2">
+                          {timeLabel}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Hover tooltip with additional info */}
+                  <div className="absolute hidden group-hover:block -top-14 z-20 whitespace-nowrap"
+                    style={{ 
+                      left: `${left + (width/2)}%`,
+                      transform: 'translateX(-50%)'
+                    }}
+                  >
+                    <div className="bg-gray-800 text-white px-3 py-1.5 rounded-lg text-sm">
+                      <div>Time window: {timeLabel}</div>
+                      <div className="text-xs text-gray-300">Timezone: {win.timezone}</div>
+                    </div>
+                    <div className="w-2 h-2 bg-gray-800 rotate-45 absolute -bottom-1 left-1/2 transform -translate-x-1/2"></div>
                   </div>
                 </div>
               );
