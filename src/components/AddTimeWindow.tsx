@@ -10,20 +10,21 @@ export default function AddTimeWindow({ onAdd, timezones }: Props) {
     const [end, setEnd] = useState("");
     const [selectedTimezone, setSelectedTimezone] = useState(timezones[0] || "");
 
-    const handleAdd = () => {
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
         if (start && end && selectedTimezone) {
-            console.log("Добавляем окно:", { start, end, selectedTimezone });  // ✅ Проверяем, что функция вызывается
+            console.log("Adding window:", { start, end, selectedTimezone });
             onAdd(start, end, selectedTimezone);
             setStart("");
             setEnd("");
         } else {
-            console.log("Ошибка: не все данные введены");  // ⚠️ Если что-то пустое
+            console.log("Error: not all data entered");
         }
     };
 
     useEffect(() => {
-        if (!selectedTimezone && timezones.length > 0) {
-            setSelectedTimezone(timezones[0]); // ✅ Берем первую таймзону в списке
+        if (timezones.length > 0) {
+            setSelectedTimezone(timezones[0]); // Take the first timezone in the list
         }
     }, [timezones]);
 
@@ -50,8 +51,8 @@ export default function AddTimeWindow({ onAdd, timezones }: Props) {
                     <option key={tz} value={tz}>{tz}</option>
                 ))}
             </select>
-            <button onClick={handleAdd} className="bg-blue-500 text-white px-2 py-1 rounded">
-                Добавить
+            <button onClick={handleSubmit} className="bg-blue-500 text-white px-2 py-1 rounded">
+                Add
             </button>
         </div>
     );

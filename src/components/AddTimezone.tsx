@@ -1,28 +1,56 @@
 import { useState } from "react";
 
-interface Props {
+interface AddTimezoneProps {
     onAdd: (timezone: string) => void;
 }
 
-export default function AddTimezone({ onAdd }: Props) {
-    const [selectedTimezone, setSelectedTimezone] = useState<string>("UTC");
+const COMMON_TIMEZONES = [
+    "UTC",
+    "America/New_York",
+    "America/Los_Angeles",
+    "Europe/London",
+    "Europe/Paris",
+    "Asia/Tokyo",
+    "Australia/Sydney",
+    "Asia/Dubai",
+    "Asia/Shanghai",
+    "Europe/Moscow"
+];
 
-    const handleAdd = () => {
+export default function AddTimezone({ onAdd }: AddTimezoneProps) {
+    const [selectedTimezone, setSelectedTimezone] = useState<string>("");
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
         if (selectedTimezone) {
             onAdd(selectedTimezone);
+            setSelectedTimezone("");
         }
     };
 
     return (
-        <div>
-            <select value={selectedTimezone} onChange={(e) => setSelectedTimezone(e.target.value)}>
-                {Intl.supportedValuesOf("timeZone").map((tz) => (
-                    <option key={tz} value={tz}>
-                        {tz}
-                    </option>
-                ))}
-            </select>
-            <button onClick={handleAdd}>Добавить</button>
-        </div>
+        <form onSubmit={handleSubmit} className="mb-4">
+            <div className="flex gap-2">
+                <select
+                    value={selectedTimezone}
+                    onChange={(e) => setSelectedTimezone(e.target.value)}
+                    className="flex-1 p-2 border rounded"
+                >
+                    <option value="">Select a timezone</option>
+                    {COMMON_TIMEZONES.map((tz) => (
+                        <option key={tz} value={tz}>
+                            {tz}
+                        </option>
+                    ))}
+                </select>
+                <button
+                    type="submit"
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    disabled={!selectedTimezone}
+                >
+                    Add
+                </button>
+            </div>
+        </form>
     );
 }

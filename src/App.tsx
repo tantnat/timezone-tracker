@@ -4,15 +4,7 @@ import TimezoneItem from "./components/TimezoneItem";
 import AddTimeWindow from "./components/AddTimeWindow";
 import TimeWindowList from "./components/TimeWindowList";
 import TimeScale from "./components/TimeScale";
-
-import { DateTime } from "luxon";
-
-interface TimeWindow {
-    id: string;
-    start: string;
-    end: string;
-    timezone: string;
-}
+import { TimeWindow } from "./types";
 
 export default function App() {
     const [timezones, setTimezones] = useState<string[]>([]);
@@ -80,7 +72,7 @@ export default function App() {
 
     return (
         <div className="max-w-2xl mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">Таймзоны и временные окна</h1>
+            <h1 className="text-2xl font-bold mb-4">Timezones and Time Windows</h1>
             <AddTimezone onAdd={addTimezone} />
             <AddTimeWindow onAdd={addTimeWindow} timezones={timezones} />
 
@@ -100,7 +92,7 @@ export default function App() {
             </ul>
     
             <div className="mt-4">
-                <h2 className="text-xl font-semibold">Временные окна</h2>
+                <h2 className="text-xl font-semibold">Time Windows</h2>
                 <TimeWindowList timeWindows={timeWindows} removeWindow={removeTimeWindow} />
             </div>
         </div>

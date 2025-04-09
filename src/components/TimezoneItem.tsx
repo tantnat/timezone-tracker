@@ -35,9 +35,9 @@ export default function TimezoneItem({ name, timeWindows, onRemove }: Props) {
                 <span className="text-lg font-medium">{name}: {time}</span>
                 <button
                     onClick={onRemove}
-                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+                    className="text-red-600 hover:text-red-800"
                 >
-                    Удалить
+                    Delete
                 </button>
             </div>
 

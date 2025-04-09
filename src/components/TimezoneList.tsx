@@ -1,29 +1,23 @@
-import { useLocalStorage } from "../hooks/useLocalStorage";
 import TimezoneItem from "./TimezoneItem";
-import AddTimezone from "./AddTimezone";
+import { TimeWindow } from "../types";
 
-export default function TimezoneList() {
-    const [timezones, setTimezones] = useLocalStorage<string[]>("timezones", []);
+interface TimezoneListProps {
+    timezones: string[];
+    timeWindows: TimeWindow[];
+    onRemove: (timezone: string) => void;
+}
 
-    const addTimezone = (timezone: string) => {
-        if (!timezones.includes(timezone)) {
-            setTimezones([...timezones, timezone]);
-        }
-    };
-
-    const removeTimezone = (timezone: string) => {
-        setTimezones(timezones.filter((tz) => tz !== timezone));
-    };
-
+export default function TimezoneList({ timezones, timeWindows, onRemove }: TimezoneListProps) {
     return (
-        <div className="max-w-md mx-auto mt-10 p-4 bg-white shadow-md rounded-lg">
-            <h2 className="text-2xl font-semibold text-center mb-4">Выбранные таймзоны</h2>
-            <AddTimezone onAdd={addTimezone} />
-            <ul className="mt-4">
-                {timezones.map((tz) => (
-                    <TimezoneItem key={tz} name={tz} onRemove={() => removeTimezone(tz)} />
-                ))}
-            </ul>
+        <div className="space-y-4">
+            {timezones.map((tz) => (
+                <TimezoneItem 
+                    key={tz} 
+                    name={tz} 
+                    timeWindows={timeWindows} 
+                    onRemove={() => onRemove(tz)} 
+                />
+            ))}
         </div>
     );
 }
